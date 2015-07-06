@@ -113,7 +113,18 @@ module.exports = {
      */
  
     groupBy:function (list, iterator) {
-        return {};
+        var res = {};
+        var key;
+        for(var i = 0; i<list.length; i++){
+            key = iterator(list[i]);
+            if(!res[key]){
+                res[key] = [];
+            }
+            res[key].push(list[i]);
+        }
+
+        return res;
+
     },
 
     /**
@@ -139,7 +150,24 @@ module.exports = {
 
     debounce: function(func, wait){
         return;
+    },
+
+    /**
+     * It compares two objects and returns true or false
+     */
+
+    deepEqual: function ( obj1, obj2 ) {
+        var countObj1 = 0, countObj2 = 0;
+        if (obj1 === obj2) return true;
+        if (obj1 === null || typeof obj1 !== "object" || obj2 === null || typeof obj2 !== "object") return false;
+        for (var key in obj1) {
+            countObj1++;
+        }
+        for (var prop in obj2) {
+            countObj2++;
+            if (!(prop in obj1) || !this.deepEqual(obj1[prop], obj2[prop])) return false;
+        }
+        return countObj1 === countObj2;
     }
- 
 };
 

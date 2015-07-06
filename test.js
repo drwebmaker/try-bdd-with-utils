@@ -60,4 +60,32 @@ describe('Utils', function() {
 		});
 	});
 
+	describe('#groupBy()', function() {
+		it('should group an array of lengths of elements in the object', function() {
+			var myArr = ['one', 'hello', 'home', 'look at my'];
+			var myObj = {
+				3: ['one'],
+				4: ['home'],
+				5: ['hello'],
+				10: ['look at my']
+			};
+			expect(utils.deepEqual(utils.groupBy(myArr, function(x) {return x.length}), myObj)).to.equal(true);
+		});
+	});
+
+	describe('#deepEqual()', function() {
+		it('Should compare objects and return false', function () {
+			var testObject1 = {
+				name: 'Maria',
+				age: 25
+			};
+			var testObject2 = {
+				userFirstName: 'Maria',
+				userAge: 25
+			};
+
+			expect(utils.deepEqual(testObject1, testObject2)).to.equal(false);
+		});
+	});
+
 });
