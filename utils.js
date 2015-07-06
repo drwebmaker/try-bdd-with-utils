@@ -7,9 +7,20 @@ module.exports = {
      */
  
     sort:function (list, comparator) {
-        return [];
+        var n = list.length;
+        for (var i = 0; i < n-1; i++) {
+            for (var j = 0; j < n-1-i; j++) {
+                if ((comparator && comparator(list[j], list[j + 1])) || (!comparator && list[j] > list[j+1])) {
+                    var t = list[j+1];
+                    list[j+1] = list[j];
+                    list[j] = t;
+                }
+            }
+        }
+        return list;
+
     },
- 
+
     /**
      * Make first letter of given string upper case
      * @param {String} string
@@ -17,7 +28,7 @@ module.exports = {
      */
  
     capitalize:function (string) {
-        return "";
+        return string.charAt(0).toUpperCase() + string.slice(1);
     },
  
     /**
@@ -27,7 +38,20 @@ module.exports = {
      */
  
     camelize:function (sequence) {
-        return "";
+
+        function toCamele(str) {
+            return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+                return letter.toUpperCase();
+            }).replace(/\s+/g, '');
+        }
+
+        if(Object.prototype.toString.call(sequence).toUpperCase() === '[OBJECT STRING]') {
+            sequence = toCamele(sequence);
+        } else if (Object.prototype.toString.call(sequence).toUpperCase() === '[OBJECT ARRAY]') {
+            var str = sequence.toString();
+            sequence = toCamele(str).split(",");
+        }
+        return sequence;
     },
  
     /**
@@ -37,7 +61,7 @@ module.exports = {
      */
  
     trim:function (str) {
-        return "";
+        return str.replace(/(^\s*)/, '').replace(/(\s*$)/, '');
     },
 
     /**
@@ -47,7 +71,11 @@ module.exports = {
      */
  
     reverse:function (list) {
-        return [];
+        var result = [];
+        for (var i = 0; i < list.length; i++) {
+            result.unshift(list[i]);
+        }
+        return result;
     },
  
     /**
@@ -58,7 +86,23 @@ module.exports = {
      */
  
     map:function (list, iterator) {
-        return [];
+        var tmpArr = [];
+
+        if (Object.prototype.toString.call(list).toUpperCase() === '[OBJECT OBJECT]') {
+            var tmpObj = {};
+            for(var key in list) {
+                if (list.hasOwnProperty(key)) {
+                    tmpObj[key] = iterator(list[key]);
+                    tmpArr.push(tmpObj[key]);
+                }
+            }
+        } else if(Object.prototype.toString.call(list).toUpperCase() === '[OBJECT ARRAY]') {
+            for (var i = 0; i < list.length; i++) {
+                tmpArr.push(iterator(list[i]));
+            }
+        }
+
+        return tmpArr;
     },
  
     /**
@@ -98,3 +142,4 @@ module.exports = {
     }
  
 };
+

@@ -15,7 +15,7 @@
     "learn",
     "study"
   ],
-  "author": "nesterone",
+  "author": "drwebmaker",
   "license": "MIT",
   "devDependencies": {
     "expect.js": "^0.3.1",
