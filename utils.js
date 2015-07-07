@@ -115,6 +115,7 @@ module.exports = {
     groupBy:function (list, iterator) {
         var res = {};
         var key;
+
         for(var i = 0; i<list.length; i++){
             key = iterator(list[i]);
             if(!res[key]){
@@ -135,7 +136,15 @@ module.exports = {
      */
 
     once: function(func){
-        return;
+
+        return function() {
+            if(func) {
+                func.apply(this, arguments);
+                func = null;
+            }
+
+            return func;
+        };
     }, 
 
 
@@ -153,7 +162,7 @@ module.exports = {
     },
 
     /**
-     * It compares two objects and returns true or false
+     * Compares two objects and returns true or false
      */
 
     deepEqual: function ( obj1, obj2 ) {

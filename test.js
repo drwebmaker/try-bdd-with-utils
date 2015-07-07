@@ -88,4 +88,24 @@ describe('Utils', function() {
 		});
 	});
 
+	describe('#once()', function() {
+		it('Should be only called one time', function () {
+			var count = 0;
+			var canOnlyFireOnce = utils.once(function() {
+				count++;
+				return count;
+			});
+			function tmp() {
+				for(var i = 0; i < 3; i++) {
+					canOnlyFireOnce()
+				}
+				if(count === 1) {
+					return true;
+				}
+
+			}
+			expect(tmp()).to.equal(true);
+		});
+	});
+
 });
