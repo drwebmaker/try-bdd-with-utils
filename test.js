@@ -108,4 +108,29 @@ describe('Utils', function() {
 		});
 	});
 
+	describe("debounce", function() {
+
+		it('Should call function after ms milliseconds', function () {
+			var ms = 1000;
+			var testTmp = 'doing something';
+
+			var date;
+			var currentDate;
+
+			var test = function () {
+				date = new Date();
+				utils.debounce(function () {
+					return testTmp.toUpperCase();
+				}, ms);
+				currentDate = new Date();
+
+				return ((currentDate - date) <= ms);
+			};
+
+			expect(test()).to.equal(true);
+		});
+
+	});
+
 });
+

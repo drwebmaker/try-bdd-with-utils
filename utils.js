@@ -158,7 +158,19 @@ module.exports = {
      */
 
     debounce: function(func, wait){
-        return;
+        var state = null;
+
+        var COOLDOWN = 1;
+
+        return function() {
+            if (state) return;
+
+            func.apply(this, arguments);
+
+            state = COOLDOWN;
+
+            setTimeout(function() { state = null }, wait);
+        }
     },
 
     /**
