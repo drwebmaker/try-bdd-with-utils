@@ -42,16 +42,20 @@ module.exports = {
         function toCamele(str) {
             return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
                 return letter.toUpperCase();
-            }).replace(/\s+/g, '');
+            }).replace(/\W/g, '');
         }
 
-        if(Object.prototype.toString.call(sequence).toUpperCase() === '[OBJECT STRING]') {
-            sequence = toCamele(sequence);
-        } else if (Object.prototype.toString.call(sequence).toUpperCase() === '[OBJECT ARRAY]') {
-            var str = sequence.toString();
-            sequence = toCamele(str).split(",");
+        if(this.isString(sequence) || this.isArray(sequence)) {
+            if(this.isString(sequence)) {
+                sequence = toCamele(sequence);
+            } else if (this.isArray(sequence)) {
+                var str = sequence.toString();
+                sequence = toCamele(str).split(",");
+            }
+            return sequence;
+        } else {
+            throw new Error('Incorrect input data format');
         }
-        return sequence;
     },
  
     /**
@@ -61,7 +65,12 @@ module.exports = {
      */
  
     trim:function (str) {
-        return str.replace(/(^\s*)/, '').replace(/(\s*$)/, '');
+        if(this.isString(str)){
+            return str.replace(/(^\s*)/, '').replace(/(\s*$)/, '');
+        }else {
+            throw new Error('Incorrect input data format');
+        }
+
     },
 
     /**
@@ -71,11 +80,16 @@ module.exports = {
      */
  
     reverse:function (list) {
-        var result = [];
-        for (var i = 0; i < list.length; i++) {
-            result.unshift(list[i]);
+        if(this.isArray(list)) {
+            var result = [];
+            for (var i = 0; i < list.length; i++) {
+                result.unshift(list[i]);
+            }
+            return result;
+        } else {
+            throw new Error('Incorrect input data format');
         }
-        return result;
+
     },
  
     /**
@@ -87,22 +101,27 @@ module.exports = {
  
     map:function (list, iterator) {
         var tmpArr = [];
-
-        if (Object.prototype.toString.call(list).toUpperCase() === '[OBJECT OBJECT]') {
-            var tmpObj = {};
-            for(var key in list) {
-                if (list.hasOwnProperty(key)) {
-                    tmpObj[key] = iterator(list[key]);
-                    tmpArr.push(tmpObj[key]);
+        if(this.isObject(list) || this.isArray(list)) {
+            if (this.isObject(list)) {
+                var tmpObj = {};
+                for(var key in list) {
+                    if (list.hasOwnProperty(key)) {
+                        tmpObj[key] = iterator(list[key]);
+                        tmpArr.push(tmpObj[key]);
+                    }
+                }
+            } else if(this.isArray(list)) {
+                for (var i = 0; i < list.length; i++) {
+                    tmpArr.push(iterator(list[i]));
                 }
             }
-        } else if(Object.prototype.toString.call(list).toUpperCase() === '[OBJECT ARRAY]') {
-            for (var i = 0; i < list.length; i++) {
-                tmpArr.push(iterator(list[i]));
-            }
+
+            return tmpArr;
+        } else {
+            throw new Error('Incorrect input data format');
         }
 
-        return tmpArr;
+
     },
  
     /**
@@ -115,16 +134,19 @@ module.exports = {
     groupBy:function (list, iterator) {
         var res = {};
         var key;
-
-        for(var i = 0; i<list.length; i++){
-            key = iterator(list[i]);
-            if(!res[key]){
-                res[key] = [];
+        if(this.isArray(list)){
+            for(var i = 0; i<list.length; i++){
+                key = iterator(list[i]);
+                if(!res[key]){
+                    res[key] = [];
+                }
+                res[key].push(list[i]);
             }
-            res[key].push(list[i]);
-        }
 
-        return res;
+            return res;
+        } else {
+            throw new Error('Incorrect input data format');
+        }
 
     },
 
@@ -189,6 +211,18 @@ module.exports = {
             if (!(prop in obj1) || !this.deepEqual(obj1[prop], obj2[prop])) return false;
         }
         return countObj1 === countObj2;
+    },
+
+    isArray: function(obj) {
+        return Object.prototype.toString.call(obj).toUpperCase() === '[OBJECT ARRAY]';
+    },
+
+    isObject: function(obj) {
+        return Object.prototype.toString.call(obj).toUpperCase() === '[OBJECT OBJECT]';
+    },
+
+    isString: function(obj) {
+        return Object.prototype.toString.call(obj).toUpperCase() === '[OBJECT STRING]';
     }
 };
 

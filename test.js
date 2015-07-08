@@ -23,10 +23,17 @@ describe('Utils', function() {
 
 	describe('#camelize()', function() {
 		it('should camelize string', function() {
-			expect(utils.camelize('just do it!')).to.equal('JustDoIt!');
+			expect(utils.camelize('just do it!')).to.equal('JustDoIt');
 		});
 		it('should camelize array of string', function() {
-			expect(utils.camelize(['just', 'do', 'it!']).join()).to.equal(['Just', 'Do', 'It!'].join());
+			expect(utils.camelize(['just', 'do', 'it!']).join()).to.equal(['JustDoIt'].join());
+		});
+		it('should return error if camelize object', function() {
+
+			expect(function() {
+				var obj = {1: 'thth', 2: 'fhfjdj'};
+				utils.camelize(obj)
+			}).to.throwError('Incorrect input data format');
 		});
 	});
 
@@ -34,11 +41,25 @@ describe('Utils', function() {
 		it('should make any count of spaces from the beginning and from the end of the string', function() {
 			expect(utils.trim(' just do it! ')).to.equal('just do it!');
 		});
+		it('should return error if get not a string', function() {
+			expect(function () {
+				utils.trim(['ttt', 'ooo', 'test', 'pppp'])
+			}).to.throwError('Incorrect input data format');
+		});
 	});
 
 	describe('#reverse()', function() {
 		it('should reverses a specified list', function() {
 			expect(utils.reverse([0, 1, 2, 3]).join()).to.equal([3, 2, 1, 0].join());
+		});
+		it ('should show array with sting reverse', function() {
+			expect(utils.reverse(['ttt', 'ooo', 'test', 'pppp']).join()).to.equal(['pppp', 'test', 'ooo', 'ttt'].join());
+		});
+		it('should return error if reverse object', function() {
+			expect(function() {
+				var obj = {1: 'thth', 2: 'fhfjdj'};
+				utils.reverse(obj)
+			}).to.throwError('Incorrect input data format');
 		});
 	});
 
@@ -58,6 +79,22 @@ describe('Utils', function() {
 				return x;
 			}).join()).to.equal([1, 2, 3, 4, 5, 6].join());
 		});
+		it('should return error if get not object or array', function() {
+			expect(function() {
+				var str = 'test me';
+				utils.map(str, function(x){
+					return x;
+				})
+			}).to.throwError('Incorrect input data format');
+			expect(function() {
+				var str = function(x){
+					return x;
+				};
+				utils.map(str(),function(x){
+					return x;
+				})
+			}).to.throwError('Incorrect input data format');
+		});
 	});
 
 	describe('#groupBy()', function() {
@@ -70,6 +107,13 @@ describe('Utils', function() {
 				10: ['look at my']
 			};
 			expect(utils.deepEqual(utils.groupBy(myArr, function(x) {return x.length}), myObj)).to.equal(true);
+		});
+		it('Should throw an Error if input is not an Array', function () {
+			expect(function () {
+				utils.groupBy('try to input me :)', function (x) {
+					return x;
+				});
+			}).to.throwError('Incorrect input data format');
 		});
 	});
 
@@ -129,6 +173,16 @@ describe('Utils', function() {
 
 			expect(test()).to.equal(true);
 		});
+
+
+
+		it('Null return null', function() {
+
+			expect(utils.debounce(null, 2000)).to.not.be.null;
+		});
+
+
+
 
 	});
 
