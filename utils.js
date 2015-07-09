@@ -7,17 +7,19 @@ module.exports = {
      */
  
     sort:function (list, comparator) {
-        var n = list.length;
-        for (var i = 0; i < n-1; i++) {
-            for (var j = 0; j < n-1-i; j++) {
-                if ((comparator && comparator(list[j], list[j + 1])) || (!comparator && list[j] > list[j+1])) {
-                    var t = list[j+1];
-                    list[j+1] = list[j];
-                    list[j] = t;
+        if(this.isArray(list)) {
+            var n = list.length;
+            for (var i = 0; i < n-1; i++) {
+                for (var j = 0; j < n-1-i; j++) {
+                    if ((comparator && comparator(list[j], list[j + 1])) || (!comparator && list[j] > list[j+1])) {
+                        var t = list[j+1];
+                        list[j+1] = list[j];
+                        list[j] = t;
+                    }
                 }
             }
-        }
-        return list;
+            return list;
+        } else { throw new Error('Incorrect input data format'); }
 
     },
 

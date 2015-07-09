@@ -1,5 +1,6 @@
 var utils = require('./utils'),
-    expect =  require('expect.js');
+    expect =  require('expect.js'),
+		sinon = require('sinon');
 
 describe('Utils', function() {
 
@@ -8,6 +9,13 @@ describe('Utils', function() {
 			expect(utils.sort([2, 1, 3, 0, 5, 6]).join()).to.equal([0, 1, 2, 3, 5, 6].join());
 			expect(utils.sort([2, 1, 3, 0, 5, 6], function(a, b) {return a > b}).join()).to.equal([0, 1, 2, 3, 5, 6].join());
 			expect(utils.sort([2, 1, 3, 0, 5, 6], function(a, b) {return a < b}).join()).to.equal([6, 5, 3, 2, 1, 0].join());
+		});
+
+		it('should sort given error if not an array', function() {
+			expect(function() {
+				var obj = {1: 'thth', 2: 'fhfjdj'};
+				utils.camelize(obj)
+			}).to.throwError('Incorrect input data format');
 		});
 
 		//TODO: don't forget about custom comparator function
@@ -106,7 +114,7 @@ describe('Utils', function() {
 				5: ['hello'],
 				10: ['look at my']
 			};
-			expect(utils.deepEqual(utils.groupBy(myArr, function(x) {return x.length}), myObj)).to.equal(true);
+			expect(utils.groupBy(myArr, function(x) {return x.length})).to.eql(myObj);
 		});
 		it('Should throw an Error if input is not an Array', function () {
 			expect(function () {
@@ -150,9 +158,42 @@ describe('Utils', function() {
 			}
 			expect(tmp()).to.equal(true);
 		});
+
+		it('Should be only called one time(with spy - calledOnce)', function () {
+			var spy = sinon.spy();
+			var canOnlyFireOnce = utils.once(function() {
+				spy();
+			});
+
+				for(var i = 0; i < 10; i++) {
+					canOnlyFireOnce()
+				}
+
+			expect(spy.calledOnce).to.equal(true);
+		});
+
+		it('Should be only called one time(with spy - calledTwice)', function () {
+			var spy = sinon.spy();
+			var canOnlyFireOnce = utils.once(function() {
+				spy();
+			});
+
+			for(var i = 0; i < 10; i++) {
+				canOnlyFireOnce()
+
+			}
+			expect(spy.calledTwice).to.equal(false);
+		});
 	});
 
 	describe("debounce", function() {
+		before(function(){
+			console.log(new Date())
+		});
+
+		after(function(){
+			console.log(new Date())
+		});
 
 		it('Should call function after ms milliseconds', function () {
 			var ms = 1000;
@@ -177,13 +218,76 @@ describe('Utils', function() {
 
 
 		it('Null return null', function() {
+			expect(utils.debounce(null, 2000)).to.be.null;
+		});
+	});
 
-			expect(utils.debounce(null, 2000)).to.not.be.null;
+	describe("debounce with Fake Timer", function() {
+		before(function() {
+			this.clock = sinon.useFakeTimers();
 		});
 
+		after(function() {
+			this.clock.restore();
+		});
 
+		it("Should call function after ms milliseconds", function() {
+			var log = '';
 
+			function f(a) {
+				log += a;
+			}
 
+			f = utils.debounce(f, 1000);
+
+			f(1); // call now
+			f(2); // ignore
+
+			setTimeout(function() {f(3)}, 100); // ignore
+			setTimeout(function() {f(4)}, 1100); // call now
+			setTimeout(function() {f(5)}, 1500); // ignore
+
+			this.clock.tick(5000);
+			expect(log).to.equal("14");
+		});
+
+	});
+
+	describe("isArray()", function() {
+		it("Should return true if it's array", function() {
+			var testArr = [1, 56, 87, 45, 76];
+			expect(utils.isArray(testArr)).to.equal(true);
+		});
+		it("Should return false if it's not array", function() {
+			var testArr = 'djgkjasdfabs';
+			expect(utils.isArray(testArr)).to.equal(false);
+		});
+	});
+
+	describe("isObject()", function() {
+		it("Should return true if it's object", function() {
+			var testobj = {1: 12, 4: 'test'};
+			expect(utils.isObject(testobj)).to.equal(true);
+		});
+		it("Should return false if it's not object", function() {
+			var testArr = 'djgkjasdfabs';
+			expect(utils.isArray(testArr)).to.equal(false);
+		});
+	});
+
+	describe("isString()", function() {
+		it("Should return true if it's string", function() {
+			var testStr = 'djgkjasdfabs';
+			expect(utils.isString(testStr)).to.equal(true);
+		});
+		it("Should return false if it's not string", function() {
+			var testArr = [1, 56, 87, 45, 76]
+			expect(utils.isString(testArr)).to.equal(false);
+		});
+		it('Should not return an Object', function () {
+			var testStr = 'djgkjasdfabs';
+			expect(utils.isString(testStr)).to.not.be.a('object');
+		});
 	});
 
 });
