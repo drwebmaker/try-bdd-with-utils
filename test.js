@@ -281,7 +281,7 @@ describe('Utils', function() {
 			expect(utils.isString(testStr)).to.equal(true);
 		});
 		it("Should return false if it's not string", function() {
-			var testArr = [1, 56, 87, 45, 76]
+			var testArr = [1, 56, 87, 45, 76];
 			expect(utils.isString(testArr)).to.equal(false);
 		});
 		it('Should not return an Object', function () {
